@@ -1,0 +1,9 @@
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\bin\Debug\ApiTester.exe.config
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\bin\Debug\ApiTester.exe
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\bin\Debug\ApiTester.pdb
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\obj\Debug\ApiTester.csprojResolveAssemblyReference.cache
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\obj\Debug\ApiTester.Form1.resources
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\obj\Debug\ApiTester.Properties.Resources.resources
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\obj\Debug\ApiTester.csproj.GenerateResource.Cache
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\obj\Debug\ApiTester.exe
+C:\Sandbox Projects\ApiTester\ApiTester\ApiTester\obj\Debug\ApiTester.pdb
