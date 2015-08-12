@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,28 +23,42 @@ namespace ApiTester
 
         private void button1_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < 100; i++)
-            {
-                string file = @"C:\Test\apitest" + i + ".zip";
-                new Task(() => { DownloadAs(file); }).Start();
+            richTextBox1.Text = string.Empty;
+            string method = comboBox1.Text;
+            string url = textBox1.Text;
+            decimal count = numericUpDown1.Value;
+            for (decimal i = 0; i < count; i++)
+            {                
+                new Task(() => { SendRequest(i, method, url); }).Start();
             }
 
         }
 
-        private void DownloadAs(string file)
+    
+
+        private async void SendRequest(decimal requestNumber, string method, string url)
         {
-           SetText("\nDownloading \"" + file + "\" ...");
-            WebClient client = new WebClient();
-            client.Credentials = new NetworkCredential("Quanser", "Codex");
+            SetText("Request " + requestNumber + ": sending...");
+            method = method.ToLower();
+            HttpClient client = new HttpClient();
             try
             {
-                client.DownloadFile(new Uri("http://repo-staging.codexdocs.com/api/v1/documents/download/ABE-Plots.zip"), file);
+                HttpResponseMessage response = new HttpResponseMessage();
+                if (method == "get")
+                    response = await client.GetAsync(url);
+                else if (method == "post")
+                    response = await client.PostAsync(url, null);
+                else if (method == "put")
+                    response = await client.PutAsync(url, null);
+                else if (method == "delete")
+                    response = await client.DeleteAsync(url);
+
+                SetText("Request " + requestNumber + ": " + response.StatusCode.ToString());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-               SetText("\nError: " + ex.Message);
+                SetText("Error: " + ex.Message);
             }
-           SetText("\n\"" + file + "\" downloaded.");
         }
 
 
@@ -57,7 +72,7 @@ namespace ApiTester
             }
             else
             {
-                this.richTextBox1.Text += text;
+                this.richTextBox1.Text += "\n" + text;
             }
 
         }
