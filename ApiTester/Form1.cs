@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -26,9 +27,10 @@ namespace ApiTester
             richTextBox1.Text = string.Empty;
             string method = comboBox1.Text;
             string url = textBox1.Text;
-            decimal count = numericUpDown1.Value;
-            for (decimal i = 0; i < count; i++)
-            {                
+            int count = (int)numericUpDown1.Value;
+            for (int i = 0; i < count; i++)
+            {
+                Debug.WriteLine(i);        
                 new Task(() => { SendRequest(i, method, url); }).Start();
             }
 
@@ -36,7 +38,7 @@ namespace ApiTester
 
     
 
-        private async void SendRequest(decimal requestNumber, string method, string url)
+        private async void SendRequest(int requestNumber, string method, string url)
         {
             SetText("Request " + requestNumber + ": sending...");
             method = method.ToLower();
@@ -53,7 +55,7 @@ namespace ApiTester
                 else if (method == "delete")
                     response = await client.DeleteAsync(url);
 
-                SetText("Request " + requestNumber + ": " + response.StatusCode.ToString());
+                SetText("Response " + requestNumber + ": " + response.StatusCode.ToString());
             }
             catch (Exception ex)
             {
@@ -65,6 +67,7 @@ namespace ApiTester
         #region Helper
         private void SetText(string text)
         {
+            Debug.WriteLine(text);
             if (this.richTextBox1.InvokeRequired)
             {
                 SetTextCallback d = new SetTextCallback(SetText);
