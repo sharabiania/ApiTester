@@ -7,7 +7,9 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -25,24 +27,40 @@ namespace ApiTester
         private void button1_Click(object sender, EventArgs e)
         {
             richTextBox1.Text = string.Empty;
+          
             string method = comboBox1.Text;
             string url = textBox1.Text;
+            string username = textBox2.Text;
+            string password = textBox3.Text;
             int count = (int)numericUpDown1.Value;
+            progressBar1.Value = 0;
+            progressBar1.Maximum = count;
             for (int i = 0; i < count; i++)
-            {
-                Debug.WriteLine(i);        
-                new Task(() => { SendRequest(i, method, url); }).Start();
+            {                
+                int temp = i;
+                progressBar1.Value ++;
+                new Thread(() => SendRequest(temp, method, url, username, password)).Start();
+                // SendRequest(temp, method, url, username, password);
             }
 
         }
 
     
+   
 
-        private async void SendRequest(int requestNumber, string method, string url)
+        private async void SendRequest(int requestNumber, string method, string url, string username = null, string password = null)
         {
+            
+            Debug.WriteLine("====Request " + requestNumber + ": sending...");
             SetText("Request " + requestNumber + ": sending...");
             method = method.ToLower();
             HttpClient client = new HttpClient();
+            if (username != null && password != null)
+            {
+                var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", username, password)));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+            }
+
             try
             {
                 HttpResponseMessage response = new HttpResponseMessage();
@@ -55,30 +73,44 @@ namespace ApiTester
                 else if (method == "delete")
                     response = await client.DeleteAsync(url);
 
+                Debug.WriteLine("++++Response " + requestNumber + ": " + response.StatusCode.ToString());
                 SetText("Response " + requestNumber + ": " + response.StatusCode.ToString());
             }
             catch (Exception ex)
             {
                 SetText("Error: " + ex.Message);
             }
+            finally
+            {
+              
+            }
+
         }
 
 
         #region Helper
         private void SetText(string text)
         {
-            Debug.WriteLine(text);
+            //this.richTextBox1.Text += "\n" + text;
+
             if (this.richTextBox1.InvokeRequired)
             {
                 SetTextCallback d = new SetTextCallback(SetText);
-                this.Invoke(d, new object[] { text });
+                Invoke(d, new object[] { text });
             }
             else
             {
                 this.richTextBox1.Text += "\n" + text;
             }
 
+
+
         }
         #endregion
+
+        private void progressBar1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
