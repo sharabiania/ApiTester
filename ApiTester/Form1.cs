@@ -39,8 +39,8 @@ namespace ApiTester
             {                
                 int temp = i;
                 progressBar1.Value ++;
-                new Thread(() => SendRequest(temp, method, url, username, password)).Start();
-                // SendRequest(temp, method, url, username, password);
+               // new Thread(() => SendRequest(temp, method, url, username, password)).Start();
+                SendRequest(temp, method, url, username, password);
             }
 
         }
@@ -48,7 +48,7 @@ namespace ApiTester
     
    
 
-        private async void SendRequest(int requestNumber, string method, string url, string username = null, string password = null)
+        private async Task SendRequest(int requestNumber, string method, string url, string username = null, string password = null)
         {
             
             Debug.WriteLine("====Request " + requestNumber + ": sending...");
@@ -93,20 +93,42 @@ namespace ApiTester
         {
             //this.richTextBox1.Text += "\n" + text;
 
-            if (this.richTextBox1.InvokeRequired)
+            //richTextBox1.AppendText("\n" + text);
+            //richTextBox1.ScrollToCaret();
+
+            if (richTextBox1.InvokeRequired)
             {
                 SetTextCallback d = new SetTextCallback(SetText);
                 Invoke(d, new object[] { text });
+
             }
             else
             {
-                this.richTextBox1.Text += "\n" + text;
+                richTextBox1.AppendText("\n" + text);
+                richTextBox1.ScrollToCaret();
             }
 
 
 
         }
         #endregion
+
+        [ThreadStatic]
+        static RichTextBox console;
+        public static RichTextBox ThreadSafeRTFConverter
+        {
+            get
+            {
+                if (console == null)
+                {
+                    console = new RichTextBox();
+
+                }
+                return console;
+            }
+
+        }
+
 
         private void progressBar1_Click(object sender, EventArgs e)
         {
